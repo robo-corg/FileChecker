@@ -1,0 +1,36 @@
+#!/opt/local/bin/python
+
+import sys
+import os
+from threading import Timer
+
+interval = int(sys.argv[1])
+target = sys.argv[2]
+action = sys.argv[3]
+
+last_exist = True
+
+def do_check():
+    global last_exist
+    exists = os.path.exists(target)
+
+    dirName = os.path.dirname(target)
+    baseName = os.path.basename(target)
+    
+    inDir = False
+
+    try:
+        inDir = baseName in os.listdir(dirName)
+    except OSError:
+        pass
+
+    if not exists or not inDir:
+        os.system(action)
+
+    last_exist = exists
+
+    timer = Timer(interval, do_check)
+    timer.start()
+
+
+do_check()
